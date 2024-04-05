@@ -3,5 +3,5 @@ import WordleWorld from './components/WordleWorld.vue'
 </script>
 
 <template>
-  <WordleWorld msg="You did it!" />
+  <WordleWorld word-of-the-day="You did it!" />
 </template>
