@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import WordleWorld from '../WordleWorld.vue';
-import { DEFEAT_MESSAGE, VICTORY_MESSAGE } from '@/configs/settings';
+import { DEFEAT_MESSAGE, VICTORY_MESSAGE, WORD_SIZE } from '@/configs/settings';
 
 describe('WordleWorld', () => {
     let wordOfTheDay = 'TESTS';
@@ -42,7 +42,7 @@ describe('WordleWorld', () => {
 
         test.each(
             [
-                { wordOfTheDay: "FLY", reason: "word-of-the-day must have 5 characters" },
+                { wordOfTheDay: "FLY", reason: `word-of-the-day must have ${ WORD_SIZE } characters` },
                 { wordOfTheDay: "tests", reason: "word-of-the-day must be all in uppercase" },
                 { wordOfTheDay: "QWERT", reason: "word-of-the-day must be a valid English word" }
             ]
@@ -58,7 +58,11 @@ describe('WordleWorld', () => {
     })
 
     describe("Player input", () => {
-        test.todo("player guesses are limited to 5 letters")
+        test(`player guesses are limited to ${ WORD_SIZE } letters`, async () => {
+            playerSubmitsGuess(wordOfTheDay + 'EXTRA');
+            await wrapper.vm.$nextTick();
+            expect(wrapper.text()).toContain(VICTORY_MESSAGE);
+        })
         test.todo("player guesses can only be submitted if they are real words")
         test.todo("player guesses are not case-sensitive")
         test.todo("player guesses can only contain letters")
