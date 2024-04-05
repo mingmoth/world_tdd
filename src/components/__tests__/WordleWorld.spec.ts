@@ -36,26 +36,22 @@ describe('WordleWorld', () => {
     })
 
     describe("Rules for defining the word of the day", () => {
-        test("If a word of the day provided does not have exactly 5 characters, a warning is emitted", async () => {
+        beforeEach(() => {
             console.warn = vi.fn();
-            mount(WordleWorld, { props: { wordOfTheDay: 'TEST' } });
-            expect(console.warn).toHaveBeenCalled();
         })
 
-        test("if the word of the day is not all in uppercase, a warning is emitted", async () => {
-            console.warn = vi.fn();
-            mount(WordleWorld, { props: { wordOfTheDay: 'tests' } });
-            expect(console.warn).toHaveBeenCalled();
-        })
-
-        test("if the word of the day is not a real English word, a warning is emitted", async () => {
-            console.warn = vi.fn();
-            mount(WordleWorld, { props: { wordOfTheDay: 'QWERT' } });
+        test.each(
+            [
+                { wordOfTheDay: "FLY", reason: "word-of-the-day must have 5 characters" },
+                { wordOfTheDay: "tests", reason: "word-of-the-day must be all in uppercase" },
+                { wordOfTheDay: "QWERT", reason: "word-of-the-day must be a valid English word" }
+            ]
+        )("Since $reason: $wordOfTheDay is invalid, therefore a warning must be emitted", async ({ wordOfTheDay }) => {
+            mount(WordleWorld, { props: { wordOfTheDay } });
             expect(console.warn).toHaveBeenCalled();
         })
 
         test("no warning is emitted if the word of the day provided is a real uppercase English word with 5 characters", async () => {
-            console.warn = vi.fn()
             mount(WordleWorld, { props: { wordOfTheDay: 'TESTS' } });
             expect(console.warn).not.toHaveBeenCalled();
         })
