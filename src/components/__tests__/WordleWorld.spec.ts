@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import WordleWorld from '../WordleWorld.vue';
-import { DEFEAT_MESSAGE, VICTORY_MESSAGE, WORD_SIZE } from '@/configs/settings';
+import { DEFEAT_MESSAGE, MAX_GUESSES_COUNT, VICTORY_MESSAGE, WORD_SIZE } from '@/configs/settings';
 
 describe('WordleWorld', () => {
     let wordOfTheDay = 'TESTS';
@@ -23,11 +23,11 @@ describe('WordleWorld', () => {
             expect(wrapper.text()).toContain(VICTORY_MESSAGE);
         })
 
-        test("a defeat message appears if the user makes a guess that is incorrect", async () => {
-            playerSubmitsGuess("WRONG");
-            await wrapper.vm.$nextTick();
-            expect(wrapper.text()).toContain(DEFEAT_MESSAGE);
-        })
+        // test("a defeat message appears if the user makes a guess that is incorrect", async () => {
+        //     playerSubmitsGuess("WRONG");
+        //     await wrapper.vm.$nextTick();
+        //     expect(wrapper.text()).toContain(DEFEAT_MESSAGE);
+        // })
 
         test("no end-of-game message appears if the user has not yet made a guess", async () => {
             expect(wrapper.text()).not.toContain(VICTORY_MESSAGE);
@@ -89,6 +89,23 @@ describe('WordleWorld', () => {
         test("non-letter characters do not render on the screen while being typed", async () => {
             await playerSubmitsGuess("333");
             expect(wrapper.find<HTMLInputElement>('input[type=text]').element.value).toEqual("")
+        })
+    })
+
+    describe.each(Array.from({ length: MAX_GUESSES_COUNT + 1 }, (_, numberOfGuesses) => ({
+        numberOfGuesses,
+        shouldSeeTheDefeatMessage: numberOfGuesses === MAX_GUESSES_COUNT
+    })))(`a defeat message should appear if the player makes incorrect guesses ${ MAX_GUESSES_COUNT } times`,  ({numberOfGuesses, shouldSeeTheDefeatMessage}) => {
+        test(`therefore, for ${numberOfGuesses} guess(es) a defeat message should ${ shouldSeeTheDefeatMessage ? "" : "not" } appear`, async () => {
+            for (let i = 0; i < numberOfGuesses; i++) {
+                await playerSubmitsGuess("WRONG")
+            }
+
+            if (shouldSeeTheDefeatMessage) {
+                expect(wrapper.text()).toContain(DEFEAT_MESSAGE)
+            } else {
+                expect(wrapper.text()).not.toContain(DEFEAT_MESSAGE)
+            }
         })
     })
 })
