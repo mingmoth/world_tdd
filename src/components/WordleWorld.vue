@@ -19,6 +19,11 @@ const isGameOver = computed(() => guessesSubmitted.value.length === MAX_GUESSES_
 
 <template>
     <main>
+        <ul>
+            <li v-for="(guess, index) in guessesSubmitted" :key="`${index}-${guess}`">
+                {{ guess }}
+            </li>
+        </ul>
         <GuessInput @guess-submit="guess => guessesSubmitted.push(guess)" />
         <p
             v-if="isGameOver"
