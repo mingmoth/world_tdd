@@ -8,6 +8,8 @@ withDefaults(defineProps<{ disabled?: boolean}>(), { disabled: false })
 const emits = defineEmits(['guess-submit']);
 
 const guessInProgress = ref<string>('');
+const hasFailedValidation = ref<boolean>(false)
+
 
 watch(
     () => guessInProgress.value,
@@ -19,7 +21,11 @@ watch(
 )
 
 function onSubmit() {
-    if(!wordsOfTheDay.includes(guessInProgress.value)) return;
+    if(!wordsOfTheDay.includes(guessInProgress.value)) {
+        hasFailedValidation.value = true
+        setTimeout(() => hasFailedValidation.value = false, 500)
+        return;
+    }
 
     emits('guess-submit', guessInProgress.value);
     guessInProgress.value = '';
@@ -30,6 +36,7 @@ function onSubmit() {
     <GuessView
         v-if="!disabled"
         :guess="guessInProgress"
+        :class="{ shake: hasFailedValidation }"
     />
     <input
         v-model="guessInProgress"
@@ -48,4 +55,25 @@ function onSubmit() {
     position: absolute;
     opacity: 0;
 } */
+
+.shake {
+    animation: shake;
+    animation-duration: 100ms;
+    animation-iteration-count: 2;
+}
+
+@keyframes shake {
+    0% {
+        transform: translateX(-2%);
+    }
+    25% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(2%);
+    }
+    75% {
+        transform: translateX(0);
+    }
+}
 </style>
