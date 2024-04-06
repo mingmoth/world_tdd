@@ -73,6 +73,10 @@ describe('WordleWorld', () => {
             await playerSubmitsGuess(wordOfTheDay + 'EXTRA');
             expect(wrapper.text()).not.toContain(VICTORY_MESSAGE);
         })
+        test("the input gets cleared after each submission", async () => {
+            await playerSubmitsGuess("WRONG")
+            expect(wrapper.find<HTMLInputElement>("input[type=text]").element.value).toEqual("")
+        })
         test("player guesses can only be submitted if they are real words", async () => {
             await playerSubmitsGuess("QWERT");
             expect(wrapper.text()).not.toContain(VICTORY_MESSAGE);

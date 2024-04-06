@@ -20,6 +20,7 @@ function onSubmit() {
     if(!wordsOfTheDay.includes(guessInProgress.value)) return;
 
     emits('guess-submit', guessInProgress.value);
+    guessInProgress.value = '';
 }
 </script>
 
