@@ -11,24 +11,30 @@ describe('WordleWorld', () => {
         wrapper = mount(WordleWorld, { props: { wordOfTheDay } })
     })
 
-    function playerTypesAndSubmitsGuess(guess: string) {
-        const guessInput = wrapper.find('input[type=text]');
-        guessInput.setValue(guess);
-        guessInput.trigger('keydown.enter');
+    async function playerTypesGuess(guess: string) {
+        await wrapper.find("input[type=text]").setValue(guess)
+    }
+
+    async function playerPressesEnter() {
+        await wrapper.find("input[type=text]").trigger("keydown.enter")
+    }
+
+    async function playerTypesAndSubmitsGuess(guess: string) {
+        await playerTypesGuess(guess);
+        await playerPressesEnter();
     }
 
     describe("End of the game messages", () => {
         test("a victory message appears when the user makes a guess that matches the word of the day", async () => {
-            playerTypesAndSubmitsGuess(wordOfTheDay);
-            await wrapper.vm.$nextTick();
+            await playerTypesAndSubmitsGuess(wordOfTheDay);
             expect(wrapper.text()).toContain(VICTORY_MESSAGE);
         })
 
-        // test("a defeat message appears if the user makes a guess that is incorrect", async () => {
-        //     playerTypesAndSubmitsGuess("WRONG");
-        //     await wrapper.vm.$nextTick();
-        //     expect(wrapper.text()).toContain(DEFEAT_MESSAGE);
-        // })
+        test("a defeat message appears if the user makes a guess that is incorrect but still have five guesses left", async () => {
+            playerTypesAndSubmitsGuess("WRONG");
+            await wrapper.vm.$nextTick();
+            expect(wrapper.text()).not.toContain(DEFEAT_MESSAGE);
+        })
 
         test("no end-of-game message appears if the user has not yet made a guess", async () => {
             expect(wrapper.text()).not.toContain(VICTORY_MESSAGE);
@@ -72,7 +78,7 @@ describe('WordleWorld', () => {
         })
         test(`player guesses are limited to ${ WORD_SIZE } letters`, async () => {
             await playerTypesAndSubmitsGuess(wordOfTheDay + 'EXTRA');
-            expect(wrapper.text()).not.toContain(VICTORY_MESSAGE);
+            expect(wrapper.text()).toContain(VICTORY_MESSAGE);
         })
         test("the input gets cleared after each submission", async () => {
             await playerTypesAndSubmitsGuess("WRONG")
@@ -85,7 +91,7 @@ describe('WordleWorld', () => {
         })
         test("player guesses are not case-sensitive", async () => {
             await playerTypesAndSubmitsGuess(wordOfTheDay.toLowerCase())
-            expect(wrapper.text()).not.toContain(VICTORY_MESSAGE);
+            expect(wrapper.text()).toContain(VICTORY_MESSAGE);
         })
         test("player guesses can only contain letters", async () => {
             await playerTypesAndSubmitsGuess('H3!RT');
