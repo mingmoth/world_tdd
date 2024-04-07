@@ -51,10 +51,10 @@ function onSubmit() {
 </template>
 
 <style scoped>
-/* input {
+input {
     position: absolute;
     opacity: 0;
-} */
+}
 
 .shake {
     animation: shake;
