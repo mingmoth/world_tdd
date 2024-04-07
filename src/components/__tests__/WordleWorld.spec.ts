@@ -94,11 +94,11 @@ describe('WordleWorld', () => {
             expect(wrapper.text()).toContain(VICTORY_MESSAGE);
         })
         test("player guesses can only contain letters", async () => {
-            await playerTypesAndSubmitsGuess('H3!RT');
+            await playerTypesGuess('H3!RT');
             expect(wrapper.find<HTMLInputElement>('input[type=text]').element.value).toEqual("HRT")
         })
         test("non-letter characters do not render on the screen while being typed", async () => {
-            await playerTypesAndSubmitsGuess("333");
+            await playerTypesGuess("123");
             expect(wrapper.find<HTMLInputElement>('input[type=text]').element.value).toEqual("")
         })
         test("the player loses control after the max amount of guesses have been sent", async () => {
